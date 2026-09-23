@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "hermes-kit 发布总览",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1380,
+      600
+    ]
+  },
+  "components": [
+    {
+      "id": "private-config",
+      "type": "security",
+      "label": "私有配置仓",
+      "sublabel": "Hermes 技能、插件",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "private-skills",
+      "type": "security",
+      "label": "私有技能仓",
+      "sublabel": "跨 agent 共享技能",
+      "pos": [
+        40,
+        400
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "export",
+      "type": "backend",
+      "label": "导出脚本",
+      "sublabel": "白名单，排除 local-*",
+      "pos": [
+        320,
+        300
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "scan",
+      "type": "security",
+      "label": "隐私扫描",
+      "sublabel": "gitleaks + 禁用词",
+      "pos": [
+        600,
+        300
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "upstream",
+      "type": "external",
+      "label": "NousResearch",
+      "sublabel": "hermes-agent 上游",
+      "pos": [
+        600,
+        80
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "fork",
+      "type": "frontend",
+      "label": "hermes-agent fork",
+      "sublabel": "上游 + overlay",
+      "pos": [
+        880,
+        80
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "hermes-kit",
+      "type": "frontend",
+      "label": "hermes-kit",
+      "sublabel": "插件、技能、文档",
+      "pos": [
+        880,
+        300
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "adonis-skills",
+      "type": "frontend",
+      "label": "adonis-skills",
+      "sublabel": "通用 agent 技能",
+      "pos": [
+        880,
+        480
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "hermes",
+      "type": "cloud",
+      "label": "Hermes Agent",
+      "sublabel": "运行时 + 网关",
+      "pos": [
+        1160,
+        190
+      ],
+      "size": [
+        190,
+        64
+      ]
+    },
+    {
+      "id": "others",
+      "type": "cloud",
+      "label": "Claude Code、Codex",
+      "sublabel": "及其他 agent",
+      "pos": [
+        1160,
+        480
+      ],
+      "size": [
+        190,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "私有源",
+      "wraps": [
+        "private-config",
+        "private-skills"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "公开仓",
+      "wraps": [
+        "fork",
+        "hermes-kit",
+        "adonis-skills"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "config-export",
+      "from": "private-config",
+      "to": "export"
+    },
+    {
+      "id": "skills-export",
+      "from": "private-skills",
+      "to": "export"
+    },
+    {
+      "id": "export-scan",
+      "from": "export",
+      "to": "scan",
+      "variant": "emphasis"
+    },
+    {
+      "id": "scan-kit",
+      "from": "scan",
+      "to": "hermes-kit",
+      "label": "全新提交",
+      "variant": "emphasis"
+    },
+    {
+      "id": "scan-skills",
+      "from": "scan",
+      "to": "adonis-skills"
+    },
+    {
+      "id": "upstream-fork",
+      "from": "upstream",
+      "to": "fork",
+      "label": "rebase",
+      "variant": "dashed"
+    },
+    {
+      "id": "fork-hermes",
+      "from": "fork",
+      "to": "hermes",
+      "label": "hermes update"
+    },
+    {
+      "id": "kit-hermes",
+      "from": "hermes-kit",
+      "to": "hermes",
+      "label": "插件、tap"
+    },
+    {
+      "id": "kit-others",
+      "from": "hermes-kit",
+      "to": "others",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "skills-others",
+      "from": "adonis-skills",
+      "to": "others",
+      "label": "npx skills"
+    }
+  ]
+}

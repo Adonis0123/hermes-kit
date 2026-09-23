@@ -1,0 +1,4 @@
+# Known false positives for the pre-export privacy scan: one regex per line.
+# Public file: generic patterns only.
+# Fork sync tag scheme vYYYY.M.D-<owner>.N, as documented in docs/hermes-fork.md.
+-ad[o]nis\.(N|[0-9]+)`

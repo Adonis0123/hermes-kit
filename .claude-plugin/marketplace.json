@@ -1,0 +1,13 @@
+{
+  "name": "hermes-kit",
+  "owner": { "name": "Adonis0123" },
+  "plugins": [
+    {
+      "name": "hermes-kit",
+      "source": "./",
+      "description": "Skills for running Hermes Agent day to day: upstream checks, Feishu reply review, Cursor CLI, document conversion.",
+      "skills": ["./skills/"],
+      "strict": false
+    }
+  ]
+}

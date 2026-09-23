@@ -1,0 +1,21 @@
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Node
+node_modules/
+
+# Never publish local specifics or secrets
+**/local-*
+.env
+.env.*
+!.env.example

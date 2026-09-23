@@ -1,0 +1,189 @@
+{
+  "generated_by": "private export script (edit the private source, not these files)",
+  "target": "hermes-kit",
+  "repo": "Adonis0123/hermes-kit",
+  "sources": [
+    {
+      "source": "Adonis0123/hermes@224aa695bf6a72edf76f7b3ec32264533daade7f",
+      "dirty": true
+    }
+  ],
+  "managed": [
+    "docs/cron-digest-pipeline-pattern.md",
+    "docs/cron-digest-pipeline-pattern.zh-CN.md",
+    "docs/feishu-gateway-blackbox-checklist.md",
+    "docs/feishu-gateway-blackbox-checklist.zh-CN.md",
+    "docs/feishu-quiet-group-delivery.md",
+    "docs/feishu-quiet-group-delivery.zh-CN.md",
+    "docs/hermes-lock-screen-design.md",
+    "docs/hermes-lock-screen-design.zh-CN.md",
+    "docs/memory-provider-adoption-gate.md",
+    "docs/memory-provider-adoption-gate.zh-CN.md",
+    "docs/upgrade-safe-customization.md",
+    "docs/upgrade-safe-customization.zh-CN.md",
+    "plugins/hermes-lock-screen",
+    "skills/ai-hotspot-digest",
+    "skills/convert-documents-to-markdown",
+    "skills/cursor-cli",
+    "skills/desktop-browser-chrome",
+    "skills/feishu-chat-style-review",
+    "skills/feishu-ui-feedback",
+    "skills/hermes-daily-review",
+    "skills/hermes-upstream-check",
+    "skills/writing-with-cursor"
+  ],
+  "files": [
+    {
+      "path": "docs/cron-digest-pipeline-pattern.md",
+      "sha256": "22dd3c945101c27544519e4a742fb54e2ebf158537152a4433be73a9fc74c930"
+    },
+    {
+      "path": "docs/cron-digest-pipeline-pattern.zh-CN.md",
+      "sha256": "e08950faec896c8eddd74cd79e1248f81426cc5868b5256448552e9507cbc2ae"
+    },
+    {
+      "path": "docs/feishu-gateway-blackbox-checklist.md",
+      "sha256": "88046df5fad4d1e338ba72a6615f86e4c0d3bf230e85202fbca1073d51eab617"
+    },
+    {
+      "path": "docs/feishu-gateway-blackbox-checklist.zh-CN.md",
+      "sha256": "934a4808b397edd6f7100423b7bde6c3562b67ad731f661c8c2150aae0f17600"
+    },
+    {
+      "path": "docs/feishu-quiet-group-delivery.md",
+      "sha256": "7f6e18c4b3c0d56e188eda4c90c187ac4e45b7e71fbbd494772ffeeac99a8aba"
+    },
+    {
+      "path": "docs/feishu-quiet-group-delivery.zh-CN.md",
+      "sha256": "7cb33fd3f3d07881a5c683e54d68b8096b3494bef81a48d82e0c68e34ab05f89"
+    },
+    {
+      "path": "docs/hermes-lock-screen-design.md",
+      "sha256": "7cd1cb09b97933e5d9c9fed1ce70ed0a8e1c0bc5fe0be83fa4c992814346bfd9"
+    },
+    {
+      "path": "docs/hermes-lock-screen-design.zh-CN.md",
+      "sha256": "a1961f2b1223348db7858e5aba2f46fa4130c0214cfa058bed1db3ededeba57f"
+    },
+    {
+      "path": "docs/memory-provider-adoption-gate.md",
+      "sha256": "d40343814380ff7747c7f0b45ec6e9fed9be6ec8e0d4c742bd47f349216433f3"
+    },
+    {
+      "path": "docs/memory-provider-adoption-gate.zh-CN.md",
+      "sha256": "d4239bac607ca6846f43b577e66beb1770cc17a96abb6d097b97485a81290639"
+    },
+    {
+      "path": "docs/upgrade-safe-customization.md",
+      "sha256": "6d80f1ddcbb25bfe90ecf780f28d47df11c3d500b108fe15d1151448dbfc49a5"
+    },
+    {
+      "path": "docs/upgrade-safe-customization.zh-CN.md",
+      "sha256": "590fe7b9d1c4a08020ca599813d50f3bbb6a85a78008d6f92948009bcadc2c20"
+    },
+    {
+      "path": "plugins/hermes-lock-screen/__init__.py",
+      "sha256": "6cb457bc51a3330edf06e37c929d36762abc4064c273e03b050b450a51d47e64"
+    },
+    {
+      "path": "plugins/hermes-lock-screen/lock_screen.py",
+      "sha256": "e8a39cfb3c82f6800aa176d76ad18133fe8281d6b6547658e863189db9f06f96"
+    },
+    {
+      "path": "plugins/hermes-lock-screen/plugin.yaml",
+      "sha256": "c7628a70d8b1768255012924ef2e347f0b8326f38dfc911f811325133142f79d"
+    },
+    {
+      "path": "skills/ai-hotspot-digest/SKILL.md",
+      "sha256": "23f6cbeedbf8fa52a2e5f182000106acf2611adc04b52d4be12c723b01d55cfc"
+    },
+    {
+      "path": "skills/ai-hotspot-digest/scripts/digest.py",
+      "sha256": "403e4c8b917703ad63c1240d60a5e0fc4c68dfb6c5a252a4f1216638a92bc148"
+    },
+    {
+      "path": "skills/ai-hotspot-digest/scripts/test_digest.py",
+      "sha256": "77cd978e47fef737a35312bb0fee625254ab99847e5a33a08580100def540428"
+    },
+    {
+      "path": "skills/convert-documents-to-markdown/SKILL.md",
+      "sha256": "8154ce74a940b35589b6bd20326c109bf560534197e34600ba6f9b8aa311c518"
+    },
+    {
+      "path": "skills/convert-documents-to-markdown/references/anydoc-read-file.md",
+      "sha256": "ecf38ddc8695ba8ecf80c47cef678fd7c2fbbb09c3944095c5efa3019df0c119"
+    },
+    {
+      "path": "skills/cursor-cli/SKILL.md",
+      "sha256": "eff16e60efc8984b0cfc0d0ca442fe1d92803e75aaad150f126e962737a6f4f5"
+    },
+    {
+      "path": "skills/cursor-cli/scripts/pick_gemini_flash.py",
+      "sha256": "fdf84acc5ce5975b065bb99a0cc9ef5d9f7f08d111b3cd86f15ec60b5a208af8"
+    },
+    {
+      "path": "skills/cursor-cli/scripts/test_pick_gemini_flash.py",
+      "sha256": "b46b486eb5ca1e34a352d0f29a00e8ae83481fc467b24351c3dc5d2f626dbf97"
+    },
+    {
+      "path": "skills/desktop-browser-chrome/SKILL.md",
+      "sha256": "2ca91d408f12c90bac8115ebb089b1de55e78a3a223c9c3f47c9946af9e24023"
+    },
+    {
+      "path": "skills/desktop-browser-chrome/references/chrome-omnibox-navigation.md",
+      "sha256": "10ebedc84287f566c214651783ee3dbe2aaa0492148084db0a2128dcfc86bd86"
+    },
+    {
+      "path": "skills/feishu-chat-style-review/SKILL.md",
+      "sha256": "ebcb716150c370c5a0f911c0b44b2164b3ed1e2f3656b13f9d2a317263a3495d"
+    },
+    {
+      "path": "skills/feishu-chat-style-review/references/message-fields.md",
+      "sha256": "f3e9f84e6822a0e9acfb149499f236b582e50ea36670ee1f79c9eca686c25ea7"
+    },
+    {
+      "path": "skills/feishu-chat-style-review/references/pattern-buckets.md",
+      "sha256": "2c4e4d0113ba2368f8ae641dcb4a932ce55a43665c12d924fcde7f00005d9aea"
+    },
+    {
+      "path": "skills/feishu-chat-style-review/references/procedure-delta.md",
+      "sha256": "587817f6325cc76807407975d747e5b65e549af948b1c899a12acedc0708c28a"
+    },
+    {
+      "path": "skills/feishu-chat-style-review/references/sample-report-shape.md",
+      "sha256": "faf708fbabbd10bf0ebcea5418e1f6fffe966f6a3a589e21109b63c1d82b8f63"
+    },
+    {
+      "path": "skills/feishu-ui-feedback/SKILL.md",
+      "sha256": "a802d2f92ccf5de0a3563e759b92f83f0226f82ff062ec68187949d313acc0b7"
+    },
+    {
+      "path": "skills/hermes-daily-review/SKILL.md",
+      "sha256": "e08d8a96c9e905d4e10afad34d6ab77aafa90781e550deb44b4d0477a679a2e9"
+    },
+    {
+      "path": "skills/hermes-daily-review/references/confirm-from-cron-output.md",
+      "sha256": "7be350ea52a40a0860d095ee603f4f35de3afdb369dd87c2e449157e316236ff"
+    },
+    {
+      "path": "skills/hermes-daily-review/scripts/check.py",
+      "sha256": "26bcd77f162808e14de3421067bc7fcdc64acbad7a791fba23ec933f516758c9"
+    },
+    {
+      "path": "skills/hermes-upstream-check/SKILL.md",
+      "sha256": "966d8f58af8eae3bf788cab42f89250aabca92cc9dbed867db6324fddd9b1507"
+    },
+    {
+      "path": "skills/hermes-upstream-check/references/align-worktree-via-cron.md",
+      "sha256": "a320e2e883a29f95f1483bb64511f93848da5988c9973de85898023a881394f3"
+    },
+    {
+      "path": "skills/hermes-upstream-check/references/fork-rebase-flow.md",
+      "sha256": "831761924d466bb76164e94cbffd06b5a2e9829103f118ffeb4167b6b72adb99"
+    },
+    {
+      "path": "skills/writing-with-cursor/SKILL.md",
+      "sha256": "b71df4fa45d978d05522eb60b042ab32360db685a7aa71a542d4f44145747cef"
+    }
+  ]
+}

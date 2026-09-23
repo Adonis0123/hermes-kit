@@ -1,0 +1,36 @@
+# hermes-kit
+
+> Hermes Agent plugins, Hermes-oriented skills, and docs for a patched Hermes fork (Feishu customizations) and a memory write-gate method. skills/ and plugins/ are generated from a private source by allowlist export; do not hand-edit them.
+
+## Start here
+
+- [README](https://github.com/Adonis0123/hermes-kit/blob/main/README.md): overview, quick start per host, contents
+- [AGENTS.md](https://github.com/Adonis0123/hermes-kit/blob/main/AGENTS.md): install table per host, layout, naming rules, validation
+- [Install](https://github.com/Adonis0123/hermes-kit/blob/main/docs/install.md): Hermes plugins and skills, Claude Code marketplace, npx skills, pinning, updating
+
+## Docs
+
+- [Hermes fork](https://github.com/Adonis0123/hermes-kit/blob/main/docs/hermes-fork.md): what the fork is, install, how hermes update follows it, switching back
+- [Feishu customizations](https://github.com/Adonis0123/hermes-kit/blob/main/docs/feishu-customizations.md): behavior and config keys of each fork patch
+- [Memory method](https://github.com/Adonis0123/hermes-kit/blob/main/docs/memory-method.md): what belongs in MEMORY.md, USER.md, SOUL.md
+- [Glossary](https://github.com/Adonis0123/hermes-kit/blob/main/CONTEXT.md): overlay, source repo, export allowlist, tap, marketplace
+
+## Guides
+
+- [Memory provider adoption gate](https://github.com/Adonis0123/hermes-kit/blob/main/docs/memory-provider-adoption-gate.md): hot/warm/cold memory tiers, trigger conditions for an external memory provider
+- [Feishu gateway black-box checklist](https://github.com/Adonis0123/hermes-kit/blob/main/docs/feishu-gateway-blackbox-checklist.md): six manual checks with message-id evidence
+- [Quiet delivery in Feishu groups](https://github.com/Adonis0123/hermes-kit/blob/main/docs/feishu-quiet-group-delivery.md): one message per task, topics, noise controls, fork-only settings marked
+- [Remote lock screen design](https://github.com/Adonis0123/hermes-kit/blob/main/docs/hermes-lock-screen-design.md): authorization, execution, and verification for the hermes-lock-screen plugin
+- [Cron digest pipeline pattern](https://github.com/Adonis0123/hermes-kit/blob/main/docs/cron-digest-pipeline-pattern.md): thin pipeline, hard filter + soft score, 7-day dedup, single-channel fallback
+- [Upgrade-safe customization](https://github.com/Adonis0123/hermes-kit/blob/main/docs/upgrade-safe-customization.md): what survives hermes update, where customizations belong, overlay tests
+
+## Decisions
+
+- [ADR 0001](https://github.com/Adonis0123/hermes-kit/blob/main/docs/adr/0001-private-source-allowlist-export.md): private source repos, published by allowlist export
+- [ADR 0002](https://github.com/Adonis0123/hermes-kit/blob/main/docs/adr/0002-fork-overlay-via-rebase.md): fork overlay re-applied by rebase
+
+## Related
+
+- [adonis-skills](https://github.com/Adonis0123/adonis-skills): agent-agnostic skills and recommended third-party skills
+- [Adonis0123/hermes-agent](https://github.com/Adonis0123/hermes-agent): the patched Hermes fork
+- [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent): upstream Hermes Agent
