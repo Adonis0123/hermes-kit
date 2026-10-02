@@ -1,10 +1,10 @@
 ---
 name: cursor-cli
-description: "Use when Hermes must run cursor-cli / cursor-agent (print, stream, model pick)."
+description: "Use when Hermes must run cursor-cli / cursor-agent: drafting, or a coding task the user explicitly hands to Cursor (print, stream, model pick)."
 license: MIT
 metadata:
   author: Adonis0123
-  version: "1.1.1"
+  version: "1.2.0"
   hermes:
     owner_local: true
     tags: [cursor, cursor-cli, cursor-agent, delegation]
@@ -25,6 +25,7 @@ Hermes 调 **Cursor Agent CLI** 的适配器。只管怎么启动、选模型、
 - 用户或其它 skill 说 `cursor-cli` / `cursor-agent` / Cursor 再写一版
 - 调用方写作 skill 的第一稿和改稿
 - `writing-with-cursor`：成篇文案 / 文档润色
+- 用户**明确**说「交给 cursor / 让 cursor 写 / 用 cursor 改代码」的编码任务（见下方「编码任务」）
 - 要把任务交给 Cursor CLI 而不是自己润色交差
 
 **不要用**
@@ -32,6 +33,7 @@ Hermes 调 **Cursor Agent CLI** 的适配器。只管怎么启动、选模型、
 - 操作 Cursor IDE 窗口 / 键鼠
 - 只问「Cursor 是什么」
 - 飞书短回复、确认、一句改（见 `writing-with-cursor`）
+- 用户没点名 Cursor 的编码任务：Hermes 不自己决定外包
 
 ## Prerequisites
 
@@ -65,6 +67,30 @@ stdout 逐行落 jsonl；text delta 同步写调用方指定的 md。`notify` �
 3. **盯进度**：轮询 md/jsonl 体积。长时间 0 增长或只见 reconnect → kill 再跑。禁止 `--output-format text` 前台干等。
 4. **超时（硬）**：墙钟 **12 分钟**仍无切干净的终稿 → kill，按调用方降级自己写，第一句标明「Cursor 超时」。不要空等到用户催。
 
+## 编码任务（用户明确交给 Cursor 时）
+
+- 账号：只用主号（`~/.local/bin/cursor-agent`，不设 `CURSOR_CONFIG_DIR`）；禁止 `cursor-cli002` / `cursorn`。跑之前 `unset CURSOR_API_KEY CURSOR_CONFIG_DIR AGENT_CLI_CREDENTIAL_STORE`。
+- 命令同上面第 2 步：后台 stream-json，`--workspace` 是用户给的仓库；12 分钟超时规则照旧。
+- 模型：用户没说 → `auto`（套餐里 Auto/Composer 额度宽松）。说了 → 查下表。
+- 收尾：让 Cursor 在最后输出改了哪些文件；Hermes 自己 `git -C <仓库> status --short` 和 `git diff --stat` 核对，再回复用户。不替 Cursor 补写代码冒充它的产物。
+
+### 切换模型
+
+先跑 `~/.local/bin/cursor-agent --list-models`，在输出里按下表前缀找 id；同前缀多个时取版本号最高、不带 `-fast` 的那个（用户说「快一点」才带 `-fast`）。找不到 → 告诉用户「当前 Cursor 没有 X」，列出相近的 id，**不擅自换别的模型**。
+
+| 用户说法 | id 前缀 | 备注 |
+|---|---|---|
+| 没说 / 自动 | `auto` | 默认 |
+| composer | `composer-` | Cursor 自家模型，额度宽 |
+| opus / claude | `claude-opus-` | 带 `-thinking-high` 的那个 |
+| sonnet | `claude-sonnet-` | 同上 |
+| gpt / sol | `gpt-` + 最新 `-sol-high` | 「luna」→ `-luna-` |
+| codex | `gpt-*-codex` | 默认不带 low/high 后缀；「高强度」→ `-high` |
+| grok | `grok-` | 默认 `-medium` |
+| gemini | `gemini-` | 写稿仍走 `pick_gemini_flash.py` |
+
+用户中途说「换成 X」：kill 当前后台进程，用新 `--model` 重跑同一个 prompt 文件，告诉用户已切换到哪个 id。
+
 ## Quick Reference
 
 | 要做 | 命令 |
@@ -74,6 +100,7 @@ stdout 逐行落 jsonl；text delta 同步写调用方指定的 md。`notify` �
 | 最新 Gemini Flash-high | `python3 ${HERMES_SKILL_DIR}/scripts/pick_gemini_flash.py` |
 | 只读问答 / 改稿润色 | 加 `--mode ask`（现稿塞进 prompt，不扫仓） |
 | 只规划 | 加 `--mode plan` |
+| 编码任务换模型 | 查「切换模型」表，`--list-models` 核对后改 `--model` |
 
 ## Procedure
 

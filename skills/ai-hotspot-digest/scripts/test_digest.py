@@ -119,6 +119,7 @@ class SelectionTests(unittest.TestCase):
         self.assertNotIn("[Agent Browser]", skill_text)
 
     def test_skill_slug_is_rendered_as_complete_human_title(self):
+        self.assertEqual(digest._humanize_title("agent-sdk"), "Agent SDK")
         selected = {
             "skills": [
                 {

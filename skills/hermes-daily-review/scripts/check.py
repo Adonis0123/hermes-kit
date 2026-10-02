@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Structural check for hermes-daily-review: review table must name existing skills."""
+"""Structural check for hermes-daily-review: review list must name existing skills."""
 from pathlib import Path
 import sys
 
@@ -10,14 +10,14 @@ needles = [
     "为何不新建",
     "禁止默认 `skill_manage create`",
     "skill-admission.md",
-    "编号表：问题 / 根因 / 建议 / 落点 / 改哪条已有",
+    "编号清单，**不用 markdown 表格**：问题 / 根因 / 建议 / 落点 / 改哪条已有",
 ]
 missing = [n for n in needles if n not in text]
 if missing:
     print("FAIL missing:", *missing, sep="\n- ")
     sys.exit(1)
-# Old 4-col header without the admission column must not remain as the only table spec.
-if "编号表：问题 / 根因 / 建议 / 落点\n" in text and "改哪条已有" not in text.split("编号表：问题 / 根因 / 建议 / 落点", 1)[1][:80]:
-    print("FAIL old 4-col review table still present")
+# Feishu cards split markdown table columns evenly; long review cells scroll inside the cell.
+if "编号表：" in text:
+    print("FAIL review spec is a table again; use the numbered list (编号清单) under 可以改进")
     sys.exit(1)
 print("ok", SKILL)

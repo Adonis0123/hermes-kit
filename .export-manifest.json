@@ -4,7 +4,7 @@
   "repo": "Adonis0123/hermes-kit",
   "sources": [
     {
-      "source": "Adonis0123/hermes@6414cff3964920408c7ad2e7351d1cc1cb0259b3",
+      "source": "Adonis0123/hermes@a03a2771245af9013a387d5e5f6c8f11e687b5d2",
       "dirty": false
     }
   ],
@@ -95,15 +95,15 @@
     },
     {
       "path": "skills/ai-hotspot-digest/SKILL.md",
-      "sha256": "23f6cbeedbf8fa52a2e5f182000106acf2611adc04b52d4be12c723b01d55cfc"
+      "sha256": "2a299b560cfad8a34f6f99754c52008a704afbac2ed73dcfa5916923470971ee"
     },
     {
       "path": "skills/ai-hotspot-digest/scripts/digest.py",
-      "sha256": "403e4c8b917703ad63c1240d60a5e0fc4c68dfb6c5a252a4f1216638a92bc148"
+      "sha256": "ba95dae209dd9fd534b56a87ef9182bc24c338d4efb13ebd4f51ac3fa759aca2"
     },
     {
       "path": "skills/ai-hotspot-digest/scripts/test_digest.py",
-      "sha256": "77cd978e47fef737a35312bb0fee625254ab99847e5a33a08580100def540428"
+      "sha256": "163388f6afbd430392c19d3a36b7ddae44c9c3fcc7d2dbcd730e59e27c483b83"
     },
     {
       "path": "skills/convert-documents-to-markdown/SKILL.md",
@@ -115,7 +115,7 @@
     },
     {
       "path": "skills/cursor-cli/SKILL.md",
-      "sha256": "eff16e60efc8984b0cfc0d0ca442fe1d92803e75aaad150f126e962737a6f4f5"
+      "sha256": "83a08442d775719e417aa3c14f3303b704240f6b582586f1d0d59e6c8ff9689d"
     },
     {
       "path": "skills/cursor-cli/scripts/pick_gemini_flash.py",
@@ -159,15 +159,15 @@
     },
     {
       "path": "skills/hermes-daily-review/SKILL.md",
-      "sha256": "e08d8a96c9e905d4e10afad34d6ab77aafa90781e550deb44b4d0477a679a2e9"
+      "sha256": "2d43a413cbfcc92fea9950d6fee64bc5a893b7d95d8e98ba8586246424959d5e"
     },
     {
       "path": "skills/hermes-daily-review/references/confirm-from-cron-output.md",
-      "sha256": "7be350ea52a40a0860d095ee603f4f35de3afdb369dd87c2e449157e316236ff"
+      "sha256": "698027ea6f4a97917bc28bf927dc09d1aa9df69990b245d7568e599bf32a6684"
     },
     {
       "path": "skills/hermes-daily-review/scripts/check.py",
-      "sha256": "26bcd77f162808e14de3421067bc7fcdc64acbad7a791fba23ec933f516758c9"
+      "sha256": "d8dc3fd262abbea518e22dd0632d8bf43dd5272da010e513b62302b33387f8b7"
     },
     {
       "path": "skills/hermes-upstream-check/SKILL.md",

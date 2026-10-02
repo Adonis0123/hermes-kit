@@ -163,6 +163,17 @@ lark-cli im +messages-mget --as bot --message-ids <om_id>
 - 本轮只有一个出站 message_id
 - history 含本期规范化 URL
 
+没有真实 `message_id` 就标 **未发群**。空闲超时、600 秒上限、工具中断都不能写成已投递。
+
+### 6b. Interrupted Run
+
+定时任务被空闲超时、执行上限或模型接口不可用打断时：
+
+- 没有 publish 输出和 `message_id` → 终态只写「早报未发群」及中断原因。
+- 禁止补写「已发布 / 已投递」。
+- 不另建补跑任务；是否补发等 owner 说「补发」。
+- **失败要私聊一句（硬·2026-10-02）**：没发出去时，给 owner 私聊只发一句「早报没发」加原因。不发到热点群，不另建补跑。课例 2026-10-01：09:05 模型接口不可用，早报死在筛选前，失败不进群，下午也没人提。
+
 ## Group Reply Discipline
 
 目标群设置 `require_mention: false` 后，只有以下消息才响应：

@@ -512,6 +512,7 @@ def _humanize_title(value: str) -> str:
         "mcp": "MCP",
         "pr": "PR",
         "react": "React",
+        "sdk": "SDK",
         "typescript": "TypeScript",
         "ui": "UI",
         "ux": "UX",
