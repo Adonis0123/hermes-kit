@@ -46,6 +46,7 @@
 | [`cursor-cli`](skills/cursor-cli/) | 从 Hermes 调用 Cursor CLI（`cursor-agent`）：print 模式、流式输出、选模型。 |
 | [`writing-with-cursor`](skills/writing-with-cursor/) | 借助 Cursor 起草或润色多段落文字和文档。 |
 | [`convert-documents-to-markdown`](skills/convert-documents-to-markdown/) | 把 Word、PowerPoint、Excel、PDF 转成 Markdown。 |
+| [`figma-copy-proofread`](skills/figma-copy-proofread/) | 比对 Figma 设计稿文案和线上页面文案，列出不一致的词条。 |
 
 ### 文档
 

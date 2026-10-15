@@ -46,6 +46,7 @@ Skills are flat: `skills/<name>/SKILL.md`.
 | [`cursor-cli`](skills/cursor-cli/) | Run the Cursor CLI (`cursor-agent`) from Hermes: print mode, streaming, model choice. |
 | [`writing-with-cursor`](skills/writing-with-cursor/) | Draft or polish multi-paragraph prose and docs through Cursor. |
 | [`convert-documents-to-markdown`](skills/convert-documents-to-markdown/) | Convert Word, PowerPoint, Excel, and PDF files to Markdown. |
+| [`figma-copy-proofread`](skills/figma-copy-proofread/) | Compare a Figma frame's copy with the live page and list the mismatches. |
 
 ### Docs
 
