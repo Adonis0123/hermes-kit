@@ -4,7 +4,7 @@
   "repo": "Adonis0123/hermes-kit",
   "sources": [
     {
-      "source": "Adonis0123/dothermes@57a13e1266cc61d382e587a46288e6d1a9ee8338",
+      "source": "Adonis0123/dothermes@139ea9b1f3dee529b27161cc525043310d188f8c",
       "dirty": false
     }
   ],
@@ -28,6 +28,7 @@
     "skills/desktop-browser-chrome",
     "skills/feishu-chat-style-review",
     "skills/feishu-ui-feedback",
+    "skills/figma-copy-proofread",
     "skills/hermes-daily-review",
     "skills/hermes-upstream-check",
     "skills/writing-with-cursor"
@@ -156,6 +157,30 @@
     {
       "path": "skills/feishu-ui-feedback/SKILL.md",
       "sha256": "a802d2f92ccf5de0a3563e759b92f83f0226f82ff062ec68187949d313acc0b7"
+    },
+    {
+      "path": "skills/figma-copy-proofread/CONTEXT.md",
+      "sha256": "5c3a34142ff00df9c9e91bc83e2a74dd34964f05422023464d049e615946954e"
+    },
+    {
+      "path": "skills/figma-copy-proofread/SKILL.md",
+      "sha256": "4a458737eeb4db3822a021f79eaf61bbe659ee8b8f2a8c4b40702b4d75b676f8"
+    },
+    {
+      "path": "skills/figma-copy-proofread/scripts/ego_capture.js",
+      "sha256": "b62bdd0211928f923f5759b8ae1ae2b636d13742e1c226fa2dec5a483729c1f0"
+    },
+    {
+      "path": "skills/figma-copy-proofread/scripts/figma_copy.py",
+      "sha256": "865e4decd703b40509c502ada2ccb5b302fc54c05373262ab4e82b4099545e87"
+    },
+    {
+      "path": "skills/figma-copy-proofread/scripts/harvest_hover_text.js",
+      "sha256": "659f1be3b2d3876dbd8c8864a53797dfc99814099eddb301fcd103cafcc88cec"
+    },
+    {
+      "path": "skills/figma-copy-proofread/scripts/test_figma_copy.py",
+      "sha256": "b9d0683eb1b5e06185a4a7849e32139a1c2757e131c056c456f3056aad04b52d"
     },
     {
       "path": "skills/hermes-daily-review/SKILL.md",
