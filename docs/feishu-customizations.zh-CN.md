@@ -38,7 +38,7 @@ platforms:
 
 ## 群里少打扰
 
-提交：[`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f5a0b929bc1a4795be85437cda4b2ccf)。
+提交：[`8d729017`](https://github.com/Adonis0123/hermes-agent/commit/8d7290172494c4b01c5ad064498ec873dc67eb0d)。
 
 - **`@所有人` 不算提及。** 开启 `require_mention` 时，只有 `@所有人` 的消息不会唤醒机器人。飞书 SDK 有时会漏掉 `@_all`，fork 会先补回来再判断。
 - **回复进话题。** 在群里，第一条 `@机器人` 的消息会成为话题的根，回复落在话题里。私聊保持平铺。用 `auto_thread: false`（`FEISHU_AUTO_THREAD`）关闭。
@@ -48,7 +48,7 @@ platforms:
 
 ## 每个回答一张 CardKit 卡片
 
-提交：[`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f5a0b929bc1a4795be85437cda4b2ccf)（飞书卡片）、[`e9b8eb26`](https://github.com/Adonis0123/hermes-agent/commit/e9b8eb2635ede18f0996fabd34114d687f9e8157)（跨工具轮保持一条流，网关核心）。
+提交：[`8d729017`](https://github.com/Adonis0123/hermes-agent/commit/8d7290172494c4b01c5ad064498ec873dc67eb0d)（飞书卡片）、[`7bbf757f`](https://github.com/Adonis0123/hermes-agent/commit/7bbf757f090b017b54c790ce15402dd3ef8698d0)（跨工具轮保持一条流，网关核心）。
 
 - 设 `stream_card: true`（`FEISHU_STREAM_CARD`）后，回答流式写进一张飞书 CardKit 卡片，原地更新。
 - 调用工具期间这张卡片保持打开。没有这个补丁，每轮工具调用都可能新起一个气泡。
@@ -61,7 +61,7 @@ platforms:
 
 ## `hermes feishu send`
 
-提交：[`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f5a0b929bc1a4795be85437cda4b2ccf)。
+提交：[`8d729017`](https://github.com/Adonis0123/hermes-agent/commit/8d7290172494c4b01c5ad064498ec873dc67eb0d)。
 
 这是内置飞书平台插件提供的 CLI 命令。它总是发送普通（非卡片）消息，所以返回的是 `om_` 消息 ID，其他工具可以在话题里回复它。它还会像 `hermes send` 一样，把文本同步进目标会话。
 
@@ -75,7 +75,7 @@ echo "done" | hermes feishu send -t feishu:<chat_id> --json
 
 ## `/new` 的提示语
 
-提交：[`ffbf2d05`](https://github.com/Adonis0123/hermes-agent/commit/ffbf2d05127c3c8bc2bcd60e296f85dc99a9c3a1)。
+提交：[`a24d6103`](https://github.com/Adonis0123/hermes-agent/commit/a24d61033e12f6abcb10a06ed9747516db495cb4)（提示）、[`973abc63`](https://github.com/Adonis0123/hermes-agent/commit/973abc6380d7d8b0547f8766b7e2fbccf76a974f)（模型行）。
 
 - `display.tips` 是字符串列表。列表非空时，网关的 `/new` 和 `/reset` 会从中随机取一行附在后面。网关进程不重启期间，同一个聊天不会连续两次拿到同一行。
 - 空列表（默认）使用内置英文提示。CLI 启动和 `/clear` 始终用内置提示。

@@ -38,7 +38,7 @@ platforms:
 
 ## Quiet group behavior
 
-Commit: [`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f5a0b929bc1a4795be85437cda4b2ccf).
+Commit: [`8d729017`](https://github.com/Adonis0123/hermes-agent/commit/8d7290172494c4b01c5ad064498ec873dc67eb0d).
 
 - **`@all` is not a mention.** With `require_mention` on, a message that only says `@all` does not wake the bot. The Feishu SDK sometimes leaves `@_all` out of the mention list, so the fork adds it back before deciding.
 - **Replies go into a topic.** In a group, the first `@bot` message becomes the root of a topic thread, and the reply lands there. DMs stay flat. Turn off with `auto_thread: false` (`FEISHU_AUTO_THREAD`).
@@ -48,7 +48,7 @@ Commit: [`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f
 
 ## One CardKit card per answer
 
-Commits: [`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f5a0b929bc1a4795be85437cda4b2ccf) (Feishu card), [`e9b8eb26`](https://github.com/Adonis0123/hermes-agent/commit/e9b8eb2635ede18f0996fabd34114d687f9e8157) (one stream across tool rounds, gateway core).
+Commits: [`8d729017`](https://github.com/Adonis0123/hermes-agent/commit/8d7290172494c4b01c5ad064498ec873dc67eb0d) (Feishu card), [`7bbf757f`](https://github.com/Adonis0123/hermes-agent/commit/7bbf757f090b017b54c790ce15402dd3ef8698d0) (one stream across tool rounds, gateway core).
 
 - With `stream_card: true` (`FEISHU_STREAM_CARD`), an answer streams into a single Feishu CardKit card that is edited in place.
 - The same card stays open across tool calls. Without this, each tool round could start a new message bubble.
@@ -61,7 +61,7 @@ Commits: [`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85
 
 ## `hermes feishu send`
 
-Commit: [`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f5a0b929bc1a4795be85437cda4b2ccf).
+Commit: [`8d729017`](https://github.com/Adonis0123/hermes-agent/commit/8d7290172494c4b01c5ad064498ec873dc67eb0d).
 
 A plugin CLI command from the bundled Feishu platform plugin. It always posts a classic (non-card) message, so the returned id is an `om_` message id that other tools can reply to in a thread. It also mirrors the text into the target chat's session, as `hermes send` does.
 
@@ -75,7 +75,7 @@ The command lives in the Feishu plugin, so core `hermes send` and `send_message`
 
 ## Tips on `/new`
 
-Commit: [`ffbf2d05`](https://github.com/Adonis0123/hermes-agent/commit/ffbf2d05127c3c8bc2bcd60e296f85dc99a9c3a1).
+Commits: [`a24d6103`](https://github.com/Adonis0123/hermes-agent/commit/a24d61033e12f6abcb10a06ed9747516db495cb4) (tips), [`973abc63`](https://github.com/Adonis0123/hermes-agent/commit/973abc6380d7d8b0547f8766b7e2fbccf76a974f) (model line).
 
 - `display.tips` is a list of strings. When it is not empty, gateway `/new` and `/reset` append one line picked at random from it. The same chat does not get the same line twice in a row while the gateway process stays up.
 - An empty list (the default) keeps the built-in English tips. CLI startup and `/clear` always use the built-in tips.
