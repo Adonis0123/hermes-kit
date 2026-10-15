@@ -43,6 +43,7 @@ platforms:
 - **`@所有人` 不算提及。** 开启 `require_mention` 时，只有 `@所有人` 的消息不会唤醒机器人。飞书 SDK 有时会漏掉 `@_all`，fork 会先补回来再判断。
 - **回复进话题。** 在群里，第一条 `@机器人` 的消息会成为话题的根，回复落在话题里。私聊保持平铺。用 `auto_thread: false`（`FEISHU_AUTO_THREAD`）关闭。
 - **追问不用 `@`。** 在机器人已经回答过的话题里，同一个发送者可以继续说，不用再 @。话题里的其他人仍要 @。用 `thread_followup_without_mention: false`（`FEISHU_THREAD_FOLLOWUP_WITHOUT_MENTION`）关闭。
+- **话题里直接回复不算引用。** 在话题里直接回复、没有点引用时，飞书仍把话题首条当作父消息。fork 会把这段上下文标成“话题首条”，agent 就不会把旧的首条当成用户在回的那条。提交：[`12d21e2b`](https://github.com/Adonis0123/hermes-agent/commit/12d21e2bc82fa749d1cde26759b65066d91fa5b8)。
 - **默认忽略表情回应。** 给机器人回复点个赞，不会触发新一轮对话。设 `route_inbound_reactions: true`（`FEISHU_ROUTE_INBOUND_REACTIONS`）后，表情会以 `reaction:added:<EMOJI>` 事件发给 agent。即使开启，点赞、OK、完成、爱心、鼓掌这类表示“收到”的表情仍然静默。
 
 ## 每个回答一张 CardKit 卡片

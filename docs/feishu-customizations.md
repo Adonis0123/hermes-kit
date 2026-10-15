@@ -43,6 +43,7 @@ Commit: [`feff7a85`](https://github.com/Adonis0123/hermes-agent/commit/feff7a85f
 - **`@all` is not a mention.** With `require_mention` on, a message that only says `@all` does not wake the bot. The Feishu SDK sometimes leaves `@_all` out of the mention list, so the fork adds it back before deciding.
 - **Replies go into a topic.** In a group, the first `@bot` message becomes the root of a topic thread, and the reply lands there. DMs stay flat. Turn off with `auto_thread: false` (`FEISHU_AUTO_THREAD`).
 - **Follow-ups without `@`.** Inside a topic the bot already answers, the same sender can keep talking without mentioning the bot again. Other people in that topic still need to `@` it. Turn off with `thread_followup_without_mention: false` (`FEISHU_THREAD_FOLLOWUP_WITHOUT_MENTION`).
+- **A plain topic reply is not a quote.** When someone replies inside a topic without picking a message to quote, Feishu still reports the topic's first message as the parent. The fork labels that context as the topic root, so the agent does not treat an old first message as what the user is answering. Commit: [`12d21e2b`](https://github.com/Adonis0123/hermes-agent/commit/12d21e2bc82fa749d1cde26759b65066d91fa5b8).
 - **Reactions are ignored by default.** A thumbs-up on a bot reply does not start a new turn. Set `route_inbound_reactions: true` (`FEISHU_ROUTE_INBOUND_REACTIONS`) to send reactions to the agent as `reaction:added:<EMOJI>` events. Even then, plain acknowledgements (thumbs-up, OK, done, heart, clap, and similar) stay silent.
 
 ## One CardKit card per answer
