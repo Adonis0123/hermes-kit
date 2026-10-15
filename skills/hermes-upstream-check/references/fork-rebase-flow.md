@@ -34,7 +34,8 @@ git rebase --onto "$NEW_BASE" "$OLD_BASE" overlay
 - import 块、上游重构过的函数签名 → 以上游为准，再把补丁意图叠回去。
 - 补丁本身的行为 → 保留补丁侧；两边都需要的逻辑（上游新增分支 + 补丁条件）合并成一个条件，不要二选一。
 - 上游已经实现了补丁的效果 → 丢掉该补丁（`git rebase --skip` 前确认），并在 `PATCHES.md` 标「已被上游吸收」。
-- 上游把补丁所在模块整个重写 → 按契约测试手工移植，不要硬解冲突。
+- 上游把补丁所在模块整个重写 → 按契约测试手工移植，不要硬解冲突。先读新版的调用点再搬行为：旧测试引用的导出名不再存在时，改测试去调现在的函数，不要把旧名字加回新模块。
+- 补丁依赖的整段接法在新版里找不到（不是改了名，是文件里已经没有这类调用）→ 停在临时目录，不要 `reset` 活仓、不要把旧模块贴回新版。先告诉哪块定制接不上，等用户选「等下一版」还是「这块先放掉」。
 
 ## 3. range-diff
 
@@ -45,6 +46,12 @@ git range-diff "$OLD_BASE..$OLD_TIP" "$NEW_BASE..overlay"
 每个旧补丁都要有对应的新补丁（`=` 相同，`!` 有改动要能解释）。只在左边出现 = 补丁丢了；只在右边出现 = 多了意外提交。
 
 ## 4. 测试
+
+**验收只有四项，整次升级约 15 分钟（硬·2026-10-15）**：overlay 契约测试 → 升级闸门 → `hermes update` → 冒烟跑一次依赖 agent 的 cron 任务（job id 见 `references/local-upgrade.md`，没有该文件就挑一个本机已有的 agent cron）。超过 20 分钟先停下告诉用户卡在哪。禁止以下加项（课例 2026-10-15 v0.22.1：三项加起来多花约 1 小时，用户催了才停）：
+
+- 不跑 `tests/` 全量。一遍约 26 分钟；上游基线自带约 130 个失败，跑完也说明不了补丁好坏。
+- 不另建 venv（`uv sync --all-extras` 超过 10 分钟）。依赖和 Python 运行时由 `hermes pm` 和 `hermes update` 管理，不用重新研究。契约测试直接用 `scripts/run_tests.sh`。
+- clone 或 worktree 放在 `~/.hermes` 之外。worktree 的 `.git` 元数据在 `~/.hermes` 下会触发 `home_io_guard` 误报（`TEST BUG: file I/O against the REAL hermes home`），这不是补丁回归。
 
 - 跑 `PATCHES.md` 列出的 overlay 契约测试（每个补丁至少一条断言其行为的测试）。文件不在或有红 = 未完成。
 - 整份模块测试全绿不够：上游测试可能按上游行为断言，补丁行为照样丢。测试与上游行为冲突时，保留断言补丁行为的测试。
@@ -67,6 +74,18 @@ gh api repos/<owner>/hermes-agent/commits/main --jq .sha
 ```
 
 `--force-with-lease` 带上旧 tip：别人（或另一个会话）在你之后推过 fork `main`，推送会被拒，而不是覆盖。被拒就重新 fetch、重做 range-diff。
+
+## Git 拉不下来
+
+`git clone` / `git fetch` 超时或 SSH 挂起时，不要在活仓上硬 rebase。改用 `gh api repos/<owner>/hermes-agent/tarball/<ref>` 下两份压缩包：fork 打当前 `main`，上游打目标 tag。下完必须 `gzip -t` 通过；不完整的包删掉重下，不要当源码用。
+
+压缩包没有提交历史，不能 `git rebase`。先在上游目录里 `git init` 并提交一次，再逐个 `git am --3way` overlay 提交。某个失败就 `git am --abort`，改按该提交的意图手工搬：
+
+- 先读新版调用点。上游已经做掉的分支（例如登录轮询已经对 408/429/5xx 退避）只补它没盖住的那一支，不要把旧函数整段贴回去。
+- 旧测试不能原样跑时，改测试去调新导出，再用活仓 `.venv` 的 pytest 跑。`scripts/run_tests.sh` 会先重建测试环境，卡住不要当测试失败。
+- 活仓与新版是两段无关历史时，`merge --ff-only` 会拒。先建 `backup/pre-<ver>-<sha>`，再 `git reset --hard` 到已推上 fork 的那一版。没有备份分支不要 reset。
+- `--force-with-lease=main:<sha>` 要用活仓 `rev-parse` 出来的完整哈希。临时目录里的短哈希解析不了，推送会报解析错而不是拒绝。
+- `git push` 挂起或 SSH 中途断开时，先用 `gh api .../commits/main` 确认远端没动。整仓历史不相关、包又很大时，不要重复推、也不要把同一份包再上传再下载：把临时目录当本地 remote（`git remote add <name> <tmp>/.git && git fetch <name>`），活仓已有 `backup/pre-<ver>-<sha>` 后 `git reset --hard <name>/<branch>`。
 
 ## 6. 活仓跟上
 

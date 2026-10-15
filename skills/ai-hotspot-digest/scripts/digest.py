@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -66,6 +67,7 @@ TRACKING_KEYS = {
 USER_AGENT = "ai-hotspot-digest/1.0 (+Hermes Agent)"
 NETWORK_ATTEMPTS = 3
 NETWORK_BACKOFF_SECONDS = (2, 5)
+COLLECT_DEADLINE_SECONDS = 90
 TRANSIENT_NETWORK_MARKERS = (
     "connection",
     "network",
@@ -467,6 +469,44 @@ def collect_candidates(history_path: Path = HISTORY_PATH) -> dict[str, Any]:
     }
 
 
+class CollectDeadline(Exception):
+    pass
+
+
+def _on_collect_alarm(signum, frame):
+    raise CollectDeadline(f"collect exceeded {COLLECT_DEADLINE_SECONDS}s")
+
+
+def collect_or_deadline(history_path: Path, *, alert: bool = True) -> dict[str, Any]:
+    """Stop collection at a hard deadline and return an error instead of hanging."""
+    previous = signal.signal(signal.SIGALRM, _on_collect_alarm)
+    signal.alarm(COLLECT_DEADLINE_SECONDS)
+    try:
+        payload = collect_candidates(history_path)
+        payload["ok"] = True
+        return payload
+    except CollectDeadline as exc:
+        payload = {
+            "ok": False,
+            "collected_at": utc_now().isoformat(),
+            "history_path": str(history_path),
+            "errors": [{"source": "deadline", "error": str(exc)[:240]}],
+            "skills": [],
+            "github": [],
+            "news": [],
+        }
+        if alert:
+            try:
+                send_owner_alert("早报没发：采集超时")
+                payload["owner_alerted"] = True
+            except Exception as alert_exc:
+                payload["owner_alert_error"] = str(alert_exc)[:240]
+        return payload
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, previous)
+
+
 def validate_selection(selection: dict[str, Any]) -> None:
     if not isinstance(selection, dict):
         raise ValueError("selection must be an object")
@@ -856,8 +896,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "collect":
-            payload = collect_candidates(args.history)
+            payload = collect_or_deadline(args.history)
             _write_json(args.output, payload)
+            return 0 if payload.get("ok") else 1
         elif args.command == "render":
             selection = _load_json(args.input)
             _write_json(args.output, build_card(selection, title=args.title))

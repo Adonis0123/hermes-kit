@@ -279,6 +279,19 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config["owner_open_id"], "")
         self.assertEqual(config["state_dir"], str(Path(tmp) / "ai-hotspot-digest"))
 
+    def test_collect_deadline_returns_error_and_alerts_owner(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "candidates.json"
+            with patch.object(digest, "collect_candidates", side_effect=digest.CollectDeadline("collect exceeded 90s")), \
+                 patch.object(digest, "send_owner_alert", return_value={"ok": True}) as alert:
+                code = digest.main(["collect", "--output", str(output), "--history", str(Path(tmp) / "history.json")])
+            payload = json.loads(output.read_text())
+        self.assertEqual(code, 1)
+        self.assertFalse(payload["ok"])
+        self.assertEqual(payload["errors"][0]["source"], "deadline")
+        self.assertTrue(payload["owner_alerted"])
+        alert.assert_called_once_with("早报没发：采集超时")
+
     def test_publish_without_chat_id_fails_before_sending(self):
         selected = {"skills": [{"name": "x", "url": "https://skills.sh/x", "reason": "x"}], "github": [], "news": []}
         with patch.object(digest.subprocess, "run") as run:

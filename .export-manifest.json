@@ -4,7 +4,7 @@
   "repo": "Adonis0123/hermes-kit",
   "sources": [
     {
-      "source": "Adonis0123/hermes@a03a2771245af9013a387d5e5f6c8f11e687b5d2",
+      "source": "Adonis0123/dothermes@57a13e1266cc61d382e587a46288e6d1a9ee8338",
       "dirty": false
     }
   ],
@@ -95,15 +95,15 @@
     },
     {
       "path": "skills/ai-hotspot-digest/SKILL.md",
-      "sha256": "2a299b560cfad8a34f6f99754c52008a704afbac2ed73dcfa5916923470971ee"
+      "sha256": "eebbec72b395f99e4a72d4cf5d2244b7bcd294d9623f32aec30c1f5a0f4df5df"
     },
     {
       "path": "skills/ai-hotspot-digest/scripts/digest.py",
-      "sha256": "ba95dae209dd9fd534b56a87ef9182bc24c338d4efb13ebd4f51ac3fa759aca2"
+      "sha256": "4bdf593f716929ba56f07f0f870f13dc698bb281ad8df01cd1482a87d0a9f9ed"
     },
     {
       "path": "skills/ai-hotspot-digest/scripts/test_digest.py",
-      "sha256": "163388f6afbd430392c19d3a36b7ddae44c9c3fcc7d2dbcd730e59e27c483b83"
+      "sha256": "322dff22cfddd839d1282899af3b7ec29255dc6f4f4d9e442308cf34b9e85a47"
     },
     {
       "path": "skills/convert-documents-to-markdown/SKILL.md",
@@ -159,11 +159,11 @@
     },
     {
       "path": "skills/hermes-daily-review/SKILL.md",
-      "sha256": "2d43a413cbfcc92fea9950d6fee64bc5a893b7d95d8e98ba8586246424959d5e"
+      "sha256": "113dc7d7f69a6fb86cc773e7c1f736fe17f70d6577a2e631a9c95757b511f3a5"
     },
     {
       "path": "skills/hermes-daily-review/references/confirm-from-cron-output.md",
-      "sha256": "698027ea6f4a97917bc28bf927dc09d1aa9df69990b245d7568e599bf32a6684"
+      "sha256": "233bc58983cec47b15793be6b9d7f78dabea0bf4f01a451dbbb8fb011b4361d0"
     },
     {
       "path": "skills/hermes-daily-review/scripts/check.py",
@@ -171,7 +171,7 @@
     },
     {
       "path": "skills/hermes-upstream-check/SKILL.md",
-      "sha256": "966d8f58af8eae3bf788cab42f89250aabca92cc9dbed867db6324fddd9b1507"
+      "sha256": "cba6b99534527dd48920d3477f9e05531d0da75b4384987a283ab4c286d2d51c"
     },
     {
       "path": "skills/hermes-upstream-check/references/align-worktree-via-cron.md",
@@ -179,7 +179,7 @@
     },
     {
       "path": "skills/hermes-upstream-check/references/fork-rebase-flow.md",
-      "sha256": "831761924d466bb76164e94cbffd06b5a2e9829103f118ffeb4167b6b72adb99"
+      "sha256": "baae549365e6ecdf4551942a7df5506ddbcdf94509519fb740cc1093ab49dc3b"
     },
     {
       "path": "skills/writing-with-cursor/SKILL.md",

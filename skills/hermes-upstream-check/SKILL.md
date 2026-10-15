@@ -66,6 +66,10 @@ git log --oneline HEAD.."$TAG^{}" | head -40
 
 `git fetch` 超时 / SSH 挂起：不要空等，改用 `gh api repos/NousResearch/hermes-agent/compare/<local-sha>...<tag>`（`ahead_by` / `behind_by` / commit 标题；约 250 条上限）。浅克隆里 `rev-list` 的 behind 数常是假大数，以 `merge-base --is-ancestor` 为准。归纳 `feat`/`fix`/`perf`，不编造 changelog。
 
+`behind_by` 才是正式版多出来的提交数。fork 的 `main` 天然领先 upstream，`ahead_by` 会把插件目录和 overlay 一起算进来，不能当成要重放的跨度。只用 `.commits[-<behind_by>:]` 取正式版那一头；要判断会不会撞上 overlay，再对这几个提交单独查 `commits/<sha>` 的文件列表，不要用 compare 返回的 `files`（那里是空的）。
+
+**提交数对不上就不写数字（硬·2026-10-12）**：浅克隆 `rev-list`、compare 的 250 条上限、笔记里的旧跨度，都不是这次的提交数。对不上就写「提交数还没核对」，禁止写「约 2100 个」这类大数。课例 2026-10-11 09:31：把补丁版写成自 v0.21.5 起约 2100 个合并 PR。
+
 ## 有更新时的输出结构
 
 1. **结论**：落后最新正式 tag；当前 `hermes --version` / hash vs tag
@@ -93,8 +97,8 @@ git log --oneline HEAD.."$TAG^{}" | head -40
 
 1. **fetch**：`git fetch "$UP" --tags`、`git fetch "$FORK"`；选目标 = 最新正式 Release tag（或明确要跟的 upstream 提交）。
 2. **记旧基点**：`OLD_BASE=$(git merge-base "$FORK/main" "$FORK/upstream-main")`（overlay 当前所在的 upstream 提交）。
-3. **在独立 clone / worktree 里 rebase**，不在活仓里做：`git rebase --onto "$TAG^{}" "$OLD_BASE" <overlay-branch>`。
-4. **`git range-diff "$OLD_BASE..$FORK/main" "$TAG^{}..HEAD"`**：每个补丁都要对得上；丢了、被上游吸收或意图变了都要说清。
+3. **在独立 clone / worktree 里 rebase**，不在活仓里做：`git rebase --onto "$TAG^{}" "$OLD_BASE" <overlay-branch>`。Git 协议 clone 失败时改用 `gh api` tarball 逐文件搬，见 `references/fork-rebase-flow.md` 「Git 拉不下来」。
+4. **`git range-diff "$OLD_BASE..$FORK/main" "$TAG^{}..HEAD"`**：每个补丁都要对得上；丢了、被上游吸收或意图变了都要说清。tarball 没有共同历史，这一步改成逐个核对 `PATCHES.md` 的行为。
 5. **跑 overlay 契约测试**（`PATCHES.md` 列出）；整份测试文件绿**不够**——上游测试可能正好断言相反行为。
 6. **更新 `PATCHES.md` + `PATCHES.zh-CN.md`**（补丁增删、被上游吸收的标注）。
 7. **tag**：`git tag -a v<TAG>-<owner>.<n> -m "..."`。

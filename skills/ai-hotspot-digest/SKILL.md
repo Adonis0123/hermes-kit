@@ -56,7 +56,7 @@ python3 ${HERMES_SKILL_DIR}/scripts/digest.py collect \
   --output /tmp/ai-hotspot-candidates.json
 ```
 
-输出：`skills`、`github`、`news`、`errors`。单源失败会进 `errors`；其他源继续。若三类候选全空，**不要发群**，改为私聊告警：
+输出：`skills`、`github`、`news`、`errors`。单源失败会进 `errors`；其他源继续。脚本自己 90 秒截止，超时写入 `deadline` 错误并私聊「早报没发：采集超时」，然后返回。不要再挂着重试采集。若三类候选全空，**不要发群**，改为私聊告警：
 
 ```bash
 python3 ${HERMES_SKILL_DIR}/scripts/digest.py alert-owner \
@@ -172,7 +172,7 @@ lark-cli im +messages-mget --as bot --message-ids <om_id>
 - 没有 publish 输出和 `message_id` → 终态只写「早报未发群」及中断原因。
 - 禁止补写「已发布 / 已投递」。
 - 不另建补跑任务；是否补发等 owner 说「补发」。
-- **失败要私聊一句（硬·2026-10-02）**：没发出去时，给 owner 私聊只发一句「早报没发」加原因。不发到热点群，不另建补跑。课例 2026-10-01：09:05 模型接口不可用，早报死在筛选前，失败不进群，下午也没人提。
+- **失败要私聊一句（硬·2026-10-02；补·2026-10-09）**：没发出去时，给 owner 私聊只发一句「早报没发」加原因。采集超时由 `digest.py` 自己私聊，agent 看到 `deadline` 不要再发第二条。调度重启、任务被标成未知、候选已采到但还没 publish，也算没发出去，结束前必须私聊这一句。不发到热点群，不另建补跑。课例 2026-10-08：09:05 已有候选，09:11 调度重启后 history 停在 10 月 6 日，当晚才说没发。
 
 ## Group Reply Discipline
 
