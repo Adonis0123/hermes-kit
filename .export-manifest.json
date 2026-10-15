@@ -4,7 +4,7 @@
   "repo": "Adonis0123/hermes-kit",
   "sources": [
     {
-      "source": "Adonis0123/dothermes@139ea9b1f3dee529b27161cc525043310d188f8c",
+      "source": "Adonis0123/dothermes@ec618a17d409d12d4dc60f04a4e1d0f5280b5b67",
       "dirty": false
     }
   ],
@@ -196,7 +196,7 @@
     },
     {
       "path": "skills/hermes-upstream-check/SKILL.md",
-      "sha256": "cba6b99534527dd48920d3477f9e05531d0da75b4384987a283ab4c286d2d51c"
+      "sha256": "5789bedbb83c5c6cff1243d30009d755368114a88c779f3fb8cfa073b3693245"
     },
     {
       "path": "skills/hermes-upstream-check/references/align-worktree-via-cron.md",
@@ -204,7 +204,7 @@
     },
     {
       "path": "skills/hermes-upstream-check/references/fork-rebase-flow.md",
-      "sha256": "baae549365e6ecdf4551942a7df5506ddbcdf94509519fb740cc1093ab49dc3b"
+      "sha256": "ea822036233dc24260c15a6857fa1f79887dedbdee3d0ee21135dfbfa649c927"
     },
     {
       "path": "skills/writing-with-cursor/SKILL.md",

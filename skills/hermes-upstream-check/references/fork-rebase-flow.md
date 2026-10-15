@@ -47,7 +47,7 @@ git range-diff "$OLD_BASE..$OLD_TIP" "$NEW_BASE..overlay"
 
 ## 4. 测试
 
-**验收只有四项，整次升级约 15 分钟（硬·2026-10-15）**：overlay 契约测试 → 升级闸门 → `hermes update` → 冒烟跑一次依赖 agent 的 cron 任务（job id 见 `references/local-upgrade.md`，没有该文件就挑一个本机已有的 agent cron）。超过 20 分钟先停下告诉用户卡在哪。禁止以下加项（课例 2026-10-15 v0.22.1：三项加起来多花约 1 小时，用户催了才停）：
+**验收只有四项，整次升级约 15 分钟（硬·2026-10-15）**：overlay 契约测试 → 升级闸门 → `hermes update` → 冒烟跑一次依赖 agent 的 cron 任务（job id 见 `references/local-upgrade.md`，没有该文件就挑一个本机已有的 agent cron）。冒烟选「没新内容就静默」的任务，例如本 skill 的上游检查：刚升完它应输出 `[SILENT]`，看 cron output 文件即可。不要跑每天投卡、等用户确认的任务（如昨日复盘），否则群里会多一张重复卡。超过 20 分钟先停下告诉用户卡在哪。禁止以下加项（课例 2026-10-15 v0.22.1：三项加起来多花约 1 小时，用户催了才停）：
 
 - 不跑 `tests/` 全量。一遍约 26 分钟；上游基线自带约 130 个失败，跑完也说明不了补丁好坏。
 - 不另建 venv（`uv sync --all-extras` 超过 10 分钟）。依赖和 Python 运行时由 `hermes pm` 和 `hermes update` 管理，不用重新研究。契约测试直接用 `scripts/run_tests.sh`。
@@ -79,7 +79,7 @@ gh api repos/<owner>/hermes-agent/commits/main --jq .sha
 
 `git clone` / `git fetch` 超时或 SSH 挂起时，不要在活仓上硬 rebase。改用 `gh api repos/<owner>/hermes-agent/tarball/<ref>` 下两份压缩包：fork 打当前 `main`，上游打目标 tag。下完必须 `gzip -t` 通过；不完整的包删掉重下，不要当源码用。
 
-压缩包没有提交历史，不能 `git rebase`。先在上游目录里 `git init` 并提交一次，再逐个 `git am --3way` overlay 提交。某个失败就 `git am --abort`，改按该提交的意图手工搬：
+压缩包没有提交历史，不能 `git rebase`。先在上游目录里 `git init`，用 `git add -A -f` 提交一次，再逐个 `git am --3way` overlay 提交。必须加 `-f`：上游的 `.gitignore` 会忽略它自己强制提交过的文件（`web/public/fonts/`、`export*`、`data/` 等），普通 `git add -A` 会漏掉。提交后核对文件数：`git ls-files | wc -l` 要等于 `gh api "repos/NousResearch/hermes-agent/git/trees/$TAG?recursive=1" --jq '[.tree[]|select(.type=="blob")]|length'`（课例 v0.21.7：漏了字体、桌面类型、p5js 等 13 个文件，却报了已换版）。某个 overlay 提交失败就 `git am --abort`，改按该提交的意图手工搬：
 
 - 先读新版调用点。上游已经做掉的分支（例如登录轮询已经对 408/429/5xx 退避）只补它没盖住的那一支，不要把旧函数整段贴回去。
 - 旧测试不能原样跑时，改测试去调新导出，再用活仓 `.venv` 的 pytest 跑。`scripts/run_tests.sh` 会先重建测试环境，卡住不要当测试失败。

@@ -105,6 +105,7 @@ git log --oneline HEAD.."$TAG^{}" | head -40
 8. **推送**：`upstream-main`（新基点）、`main`（`--force-with-lease=main:<旧 fork main sha>`）、tag。推完用 `gh api` 回读远端 `main` 与 tag。
 9. **活仓跟上**：`origin` = fork → `hermes update`；否则按 `references/align-worktree-via-cron.md` 在会话闸外对齐。然后请用户 `/restart` gateway。
 10. **核活仓**：只认活仓 `hermes_cli/__init__.py` 的 `__version__` + `git log -1`；gateway 进程启动时间要晚于切换时间。
+11. **核基线等于正式 tag**：`git diff --name-status "$TAG^{}" "$FORK/upstream-main"` 必须为空，才能说「已换到 `$TAG`」。不为空就列出差的文件，写「定制已接上，和 `$TAG` 还差这几个文件」。
 
 ## 硬规则
 
