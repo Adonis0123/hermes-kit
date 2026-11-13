@@ -4,7 +4,7 @@
   "repo": "Adonis0123/hermes-kit",
   "sources": [
     {
-      "source": "Adonis0123/dothermes@ec618a17d409d12d4dc60f04a4e1d0f5280b5b67",
+      "source": "Adonis0123/dothermes@d92735f17f5e976139c7cb16f076c617ec72683c",
       "dirty": false
     }
   ],
@@ -25,7 +25,6 @@
     "skills/ai-hotspot-digest",
     "skills/convert-documents-to-markdown",
     "skills/cursor-cli",
-    "skills/desktop-browser-chrome",
     "skills/feishu-chat-style-review",
     "skills/feishu-ui-feedback",
     "skills/figma-copy-proofread",
@@ -96,15 +95,15 @@
     },
     {
       "path": "skills/ai-hotspot-digest/SKILL.md",
-      "sha256": "eebbec72b395f99e4a72d4cf5d2244b7bcd294d9623f32aec30c1f5a0f4df5df"
+      "sha256": "2e14933a22b9e93e4b0b6028decf4251cc4926a21e8e57505137815a50d4400c"
     },
     {
       "path": "skills/ai-hotspot-digest/scripts/digest.py",
-      "sha256": "4bdf593f716929ba56f07f0f870f13dc698bb281ad8df01cd1482a87d0a9f9ed"
+      "sha256": "4891f3738a43e16d79f2eb5b5013ac644df4f3b3ed56b50f03fc8309730f1458"
     },
     {
       "path": "skills/ai-hotspot-digest/scripts/test_digest.py",
-      "sha256": "322dff22cfddd839d1282899af3b7ec29255dc6f4f4d9e442308cf34b9e85a47"
+      "sha256": "b986569ccc785a568618f0b459989711eac5d08d8ba1eb5492c5225283769067"
     },
     {
       "path": "skills/convert-documents-to-markdown/SKILL.md",
@@ -125,14 +124,6 @@
     {
       "path": "skills/cursor-cli/scripts/test_pick_gemini_flash.py",
       "sha256": "b46b486eb5ca1e34a352d0f29a00e8ae83481fc467b24351c3dc5d2f626dbf97"
-    },
-    {
-      "path": "skills/desktop-browser-chrome/SKILL.md",
-      "sha256": "2ca91d408f12c90bac8115ebb089b1de55e78a3a223c9c3f47c9946af9e24023"
-    },
-    {
-      "path": "skills/desktop-browser-chrome/references/chrome-omnibox-navigation.md",
-      "sha256": "10ebedc84287f566c214651783ee3dbe2aaa0492148084db0a2128dcfc86bd86"
     },
     {
       "path": "skills/feishu-chat-style-review/SKILL.md",
@@ -184,11 +175,11 @@
     },
     {
       "path": "skills/hermes-daily-review/SKILL.md",
-      "sha256": "113dc7d7f69a6fb86cc773e7c1f736fe17f70d6577a2e631a9c95757b511f3a5"
+      "sha256": "d9eb7fda994a46811954bfac8480b7b1161c8f918c2c91e72f3058d6d38c956f"
     },
     {
       "path": "skills/hermes-daily-review/references/confirm-from-cron-output.md",
-      "sha256": "233bc58983cec47b15793be6b9d7f78dabea0bf4f01a451dbbb8fb011b4361d0"
+      "sha256": "ae0ded283cb2c0a8ba5edce17dce5e89054405177cdd7f3144311e6caecc304d"
     },
     {
       "path": "skills/hermes-daily-review/scripts/check.py",
@@ -196,7 +187,7 @@
     },
     {
       "path": "skills/hermes-upstream-check/SKILL.md",
-      "sha256": "5789bedbb83c5c6cff1243d30009d755368114a88c779f3fb8cfa073b3693245"
+      "sha256": "d8e3a8b1262863231ba68c2e39d6e89afbcf07a4419813bcad088db7c4513d7f"
     },
     {
       "path": "skills/hermes-upstream-check/references/align-worktree-via-cron.md",

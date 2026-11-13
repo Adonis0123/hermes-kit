@@ -4,6 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import calendar
+import codecs
+import gzip
 import hashlib
 import json
 import os
@@ -16,10 +19,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import zlib
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, NamedTuple
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 LOCAL_CONFIG_PATH = SKILL_DIR / "references" / "local-config.json"
@@ -53,6 +57,9 @@ CHAT_ID = CONFIG["chat_id"]
 OWNER_OPEN_ID = CONFIG["owner_open_id"]
 STATE_DIR = Path(CONFIG["state_dir"])
 HISTORY_PATH = STATE_DIR / "history.json"
+ARCHIVE_DIR = Path(os.environ.get("AI_HOTSPOT_ARCHIVE_DIR") or STATE_DIR / "archive").expanduser()
+ARCHIVE_RETENTION_DAYS = 90
+ARCHIVE_FILE_RE = re.compile(r"^(\d{4})-(\d{2})\.jsonl$")
 LIMITS = {"skills": 5, "github": 5, "news": 3}
 TRACKING_KEYS = {
     "fbclid",
@@ -206,6 +213,79 @@ def commit_history(
     temp.replace(path)
 
 
+def _archive_has_message(path: Path, *, date: str, message_id: str) -> bool:
+    if not message_id or not path.exists():
+        return False
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(record, dict) and record.get("date") == date and record.get("message_id") == message_id:
+                return True
+    return False
+
+
+def prune_archive(archive_dir: Path, *, today: Any, retention_days: int = ARCHIVE_RETENTION_DAYS) -> list[Path]:
+    """Delete YYYY-MM.jsonl files whose whole month ends before today - retention_days."""
+    cutoff = today - timedelta(days=retention_days)
+    removed: list[Path] = []
+    if not archive_dir.is_dir():
+        return removed
+    for path in archive_dir.iterdir():
+        match = ARCHIVE_FILE_RE.match(path.name)
+        if not match or not path.is_file():
+            continue
+        year, month = int(match.group(1)), int(match.group(2))
+        if not 1 <= month <= 12:
+            continue
+        month_end = today.replace(year=year, month=month, day=calendar.monthrange(year, month)[1])
+        if month_end < cutoff:
+            path.unlink()
+            removed.append(path)
+    return removed
+
+
+def archive_selection(
+    selection: dict[str, Any],
+    *,
+    message_id: str,
+    mode: str,
+    archive_dir: Path = ARCHIVE_DIR,
+    now: datetime | None = None,
+    retention_days: int = ARCHIVE_RETENTION_DAYS,
+) -> Path:
+    """Append the sent selection to archive_dir/YYYY-MM.jsonl, then prune old months."""
+    local_now = (now or datetime.now()).astimezone()
+    today = local_now.date()
+    date = today.isoformat()
+    path = Path(archive_dir) / f"{today:%Y-%m}.jsonl"
+    if not _archive_has_message(path, date=date, message_id=message_id):
+        lines = []
+        for section in LIMITS:
+            for rank, item in enumerate(selection.get(section, []), start=1):
+                record = {
+                    "v": 1,
+                    "date": date,
+                    "at": local_now.isoformat(),
+                    "category": section,
+                    "rank": rank,
+                    "name": str(item.get("name", "")).strip(),
+                    "url": normalize_url(str(item.get("url", ""))),
+                    "reason": str(item.get("reason", "")).strip(),
+                    "message_id": message_id,
+                    "mode": mode,
+                }
+                lines.append(json.dumps(record, ensure_ascii=False) + "\n")
+        if lines:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a", encoding="utf-8") as handle:
+                handle.write("".join(lines))
+    prune_archive(Path(archive_dir), today=today, retention_days=retention_days)
+    return path
+
+
 def _retry_network(operation: Any) -> Any:
     for attempt in range(NETWORK_ATTEMPTS):
         try:
@@ -234,14 +314,60 @@ def _http_json(url: str, timeout: int = 20) -> Any:
     return _retry_network(fetch)
 
 
-def _http_text(url: str, timeout: int = 20) -> str:
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+class HttpText(NamedTuple):
+    status: int
+    text: str
+    head: bytes  # first 200 bytes of the decompressed body, for parse-failure logs
+    content_encoding: str
 
-    def fetch() -> str:
+
+def _decompress(raw: bytes, content_encoding: str) -> bytes:
+    """Undo gzip/deflate. Google Frontend may send gzip even when urllib asked for identity."""
+    encoding = content_encoding.lower()
+    try:
+        if raw[:2] == b"\x1f\x8b":
+            return gzip.decompress(raw)
+        if "deflate" in encoding:
+            try:
+                return zlib.decompress(raw)
+            except zlib.error:
+                return zlib.decompress(raw, -zlib.MAX_WBITS)
+    except (OSError, EOFError, zlib.error):
+        return raw
+    return raw
+
+
+def _decode_text(body: bytes, charset: str | None) -> str:
+    if body.startswith(codecs.BOM_UTF8):
+        return body[len(codecs.BOM_UTF8):].decode("utf-8", errors="replace")
+    try:
+        codec = codecs.lookup(charset or "utf-8").name
+    except LookupError:
+        codec = "utf-8"
+    return body.decode(codec, errors="replace").lstrip("\ufeff")
+
+
+def _http_text_response(url: str, timeout: int = 20) -> HttpText:
+    request = urllib.request.Request(
+        url, headers={"User-Agent": USER_AGENT, "Accept-Encoding": "gzip, deflate"}
+    )
+
+    def fetch() -> HttpText:
         with urllib.request.urlopen(request, timeout=timeout) as response:
-            return response.read().decode("utf-8", errors="replace")
+            content_encoding = response.headers.get("Content-Encoding", "") or ""
+            body = _decompress(response.read(), content_encoding)
+            return HttpText(
+                status=int(getattr(response, "status", 0) or 0),
+                text=_decode_text(body, response.headers.get_content_charset()),
+                head=body[:200],
+                content_encoding=content_encoding,
+            )
 
     return _retry_network(fetch)
+
+
+def _http_text(url: str, timeout: int = 20) -> str:
+    return _http_text_response(url, timeout=timeout).text
 
 
 def _dedupe(items: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -438,10 +564,19 @@ def parse_feed_xml(xml_text: str, *, source: str, feed_url: str) -> list[dict[st
 def collect_rss(errors: list[dict[str, str]]) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
     for source, feed_url in RSS_FEEDS:
+        response: HttpText | None = None
         try:
-            output.extend(parse_feed_xml(_http_text(feed_url), source=source, feed_url=feed_url))
+            response = _http_text_response(feed_url)
+            output.extend(parse_feed_xml(response.text, source=source, feed_url=feed_url))
         except Exception as exc:
-            errors.append({"source": f"rss:{source}", "error": str(exc)[:240]})
+            entry = {"source": f"rss:{source}", "error": str(exc)[:240]}
+            if response is not None:
+                entry["status"] = str(response.status)
+                entry["content_encoding"] = response.content_encoding
+                entry["head"] = repr(response.head)
+            elif isinstance(exc, urllib.error.HTTPError):
+                entry["status"] = str(exc.code)
+            errors.append(entry)
     return _dedupe(output)
 
 
@@ -539,8 +674,15 @@ def _escape_md(value: str) -> str:
 
 
 def _humanize_title(value: str) -> str:
-    """Turn a machine slug into a readable title while preserving common product names."""
-    words = re.split(r"[-_\s]+", _clean_text(value, 120))
+    """Turn a machine slug into a readable title while preserving common product names.
+
+    A name that already has spaces is an authored title. Keep it, including hyphens
+    such as "Multi-Agent", instead of re-casing every word.
+    """
+    cleaned = _clean_text(value, 120)
+    if " " in cleaned:
+        return cleaned
+    words = re.split(r"[-_\s]+", cleaned)
     special = {
         "ai": "AI",
         "api": "API",
@@ -795,6 +937,7 @@ def send_selection(
     chat_id: str = CHAT_ID,
     title: str = "AI 热点早报",
     history_path: Path = HISTORY_PATH,
+    archive_dir: Path = ARCHIVE_DIR,
     dry_run: bool = False,
     acceptance: bool = False,
 ) -> dict[str, Any]:
@@ -830,18 +973,28 @@ def send_selection(
         except RuntimeError as fallback_error:
             raise RuntimeError(f"card failed: {card_error}; fallback failed: {fallback_error}") from fallback_error
         mode = "post"
+    message_id = _message_id(payload)
     if not acceptance:
         commit_history(selection, path=history_path)
-    return {
+    response = {
         "ok": True,
         "mode": mode,
-        "message_id": _message_id(payload),
+        "message_id": message_id,
         "counts": {section: len(selection.get(section, [])) for section in LIMITS},
         "history_path": str(history_path),
         "acceptance": acceptance,
         "history_committed": not acceptance,
         "raw": payload,
     }
+    if not acceptance:
+        # The message is already sent; an archive failure must not fail publish.
+        try:
+            response["archive_path"] = str(
+                archive_selection(selection, message_id=message_id, mode=mode, archive_dir=archive_dir)
+            )
+        except Exception as exc:
+            response["archive_error"] = str(exc) or type(exc).__name__
+    return response
 
 
 def send_owner_alert(text: str, *, owner_open_id: str = OWNER_OPEN_ID) -> dict[str, Any]:
@@ -886,6 +1039,7 @@ def main(argv: list[str] | None = None) -> int:
     publish_parser.add_argument("--chat-id", default=CHAT_ID)
     publish_parser.add_argument("--title", default="AI 热点早报")
     publish_parser.add_argument("--history", type=Path, default=HISTORY_PATH)
+    publish_parser.add_argument("--archive-dir", type=Path, default=ARCHIVE_DIR)
     publish_mode = publish_parser.add_mutually_exclusive_group()
     publish_mode.add_argument("--dry-run", action="store_true")
     publish_mode.add_argument("--acceptance", action="store_true")
@@ -911,6 +1065,7 @@ def main(argv: list[str] | None = None) -> int:
                     chat_id=args.chat_id,
                     title=args.title,
                     history_path=args.history,
+                    archive_dir=args.archive_dir,
                     dry_run=args.dry_run,
                     acceptance=args.acceptance,
                 ),

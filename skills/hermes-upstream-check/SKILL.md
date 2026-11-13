@@ -47,6 +47,7 @@ echo "upstream=$UP fork=$FORK origin_is=$ORIGIN_IS"
 ## 静默规则（定时任务）
 
 - **无更新**（最新正式 Release tag 已是 HEAD 祖先）→ **最终回复为空**，不发「已是最新」。
+- **脚本输出 `verdict=DOWNGRADE`** → 也当无更新，最终回复为空。这个 tag 的内容比本机基线旧，升上去等于降级，不报、不建议升。
 - **有更新**才发中文短报：变更摘要 + 是否值得更 + 等 owner 决定。
 - **禁止**自动升级 / 改配置 / 重启 gateway，除非 owner 明确说「更新」。
 - **MEMORY 不是版本证据**：版本、落后多少、值不值得更，只认当场跑的 `hermes --version` / git / GitHub API。
@@ -67,6 +68,10 @@ git log --oneline HEAD.."$TAG^{}" | head -40
 `git fetch` 超时 / SSH 挂起：不要空等，改用 `gh api repos/NousResearch/hermes-agent/compare/<local-sha>...<tag>`（`ahead_by` / `behind_by` / commit 标题；约 250 条上限）。浅克隆里 `rev-list` 的 behind 数常是假大数，以 `merge-base --is-ancestor` 为准。归纳 `feat`/`fix`/`perf`，不编造 changelog。
 
 `behind_by` 才是正式版多出来的提交数。fork 的 `main` 天然领先 upstream，`ahead_by` 会把插件目录和 overlay 一起算进来，不能当成要重放的跨度。只用 `.commits[-<behind_by>:]` 取正式版那一头；要判断会不会撞上 overlay，再对这几个提交单独查 `commits/<sha>` 的文件列表，不要用 compare 返回的 `files`（那里是空的）。
+
+**跨度反了就停，改从正式版往回看**：`compare/<本机 sha>...<正式 tag>` 里 `ahead_by` 远大于 `behind_by`，说明本机基线比正式版旧很多，不是正式版只多了几十个提交。这时禁止用 `.commits[-<behind_by>:]` 当跨度，改跑 `git fetch <upstream url> tag <TAG>` 再 `git rev-list --count HEAD..<TAG>`。这个数上千也照样用 `hermes-fork-upgrade.sh prepare`，不要手搬。
+
+**祖先关系不等于内容更新（硬·2026-10-17）**：`is-ancestor` 说「落后」不够，还要看内容。定时脚本 `===UPGRADE_SAFETY===` 段已经算好：`verdict=OK` 才算真有更新；`DOWNGRADE` 按静默规则处理；`UNKNOWN` 时手动跑 `git diff --shortstat origin/upstream-main "$TAG^{commit}"`，删除超过 2 万行且超过新增的两倍，就按降级处理。课例：v0.22.2 的发布提交把 v0.22.1 当父提交，内容却是更旧的 `release/0.22.1`。合进 `main` 后删了约 18.6 万行，网关的降级保护让网关停了约 30 小时。
 
 **提交数对不上就不写数字（硬·2026-10-12）**：浅克隆 `rev-list`、compare 的 250 条上限、笔记里的旧跨度，都不是这次的提交数。对不上就写「提交数还没核对」，禁止写「约 2100 个」这类大数。课例 2026-10-11 09:31：把补丁版写成自 v0.21.5 起约 2100 个合并 PR。
 
@@ -93,21 +98,30 @@ git log --oneline HEAD.."$TAG^{}" | head -40
 
 ## fork 升级流程（owner 确认「更新」后）
 
-细则与命令：`references/fork-rebase-flow.md`。概要：
+**只用脚本，不手搬（硬·2026-10-23）**。本机入口是 fork 升级脚本 `hermes-fork-upgrade.sh`（路径见 `references/local-upgrade.md`），没有这个脚本时按 `references/fork-rebase-flow.md` 手做同样几步。课例：10-14、10-16、10-23 三次都是 agent 临场决定搬哪些补丁，每次都丢了飞书叠层。10-23 那次用 `git archive` 加孤儿提交、`reset --hard` 覆盖活仓，没跑闸门就报「已升到」。
 
-1. **fetch**：`git fetch "$UP" --tags`、`git fetch "$FORK"`；选目标 = 最新正式 Release tag（或明确要跟的 upstream 提交）。
-2. **记旧基点**：`OLD_BASE=$(git merge-base "$FORK/main" "$FORK/upstream-main")`（overlay 当前所在的 upstream 提交）。
-3. **在独立 clone / worktree 里 rebase**，不在活仓里做：`git rebase --onto "$TAG^{}" "$OLD_BASE" <overlay-branch>`。Git 协议 clone 失败时改用 `gh api` tarball 逐文件搬，见 `references/fork-rebase-flow.md` 「Git 拉不下来」。
-4. **`git range-diff "$OLD_BASE..$FORK/main" "$TAG^{}..HEAD"`**：每个补丁都要对得上；丢了、被上游吸收或意图变了都要说清。tarball 没有共同历史，这一步改成逐个核对 `PATCHES.md` 的行为。
-5. **跑 overlay 契约测试**（`PATCHES.md` 列出）；整份测试文件绿**不够**——上游测试可能正好断言相反行为。
-6. **更新 `PATCHES.md` + `PATCHES.zh-CN.md`**（补丁增删、被上游吸收的标注）。
-7. **tag**：`git tag -a v<TAG>-<owner>.<n> -m "..."`。
-8. **推送**：`upstream-main`（新基点）、`main`（`--force-with-lease=main:<旧 fork main sha>`）、tag。推完用 `gh api` 回读远端 `main` 与 tag。
-9. **活仓跟上**：`origin` = fork → `hermes update`；否则按 `references/align-worktree-via-cron.md` 在会话闸外对齐。然后请用户 `/restart` gateway。
-10. **核活仓**：只认活仓 `hermes_cli/__init__.py` 的 `__version__` + `git log -1`；gateway 进程启动时间要晚于切换时间。
-11. **核基线等于正式 tag**：`git diff --name-status "$TAG^{}" "$FORK/upstream-main"` 必须为空，才能说「已换到 `$TAG`」。不为空就列出差的文件，写「定制已接上，和 `$TAG` 还差这几个文件」。
+```bash
+S=<path-to>/hermes-fork-upgrade.sh   # 本机路径见 references/local-upgrade.md
+$S check            # 只读：基点、目标正式版、内容是否倒退
+$S prepare [TAG]    # 独立 worktree 里 rebase --onto TAG（--empty=stop --reapply-cherry-picks），成功后自动 verify
+$S continue         # 冲突只在脚本打印的 worktree 里解决，git add 后跑这条
+$S verify           # range-diff 核补丁数 + 叠层清单 + 闸门测试（worktree）
+$S switch           # 打 tag、推 fork、活仓 hermes update 跟上、活仓完整闸门；红了自动回滚活仓和 fork
+$S status | abort
+```
+
+- 每次停下，stderr 最后一行是 `UPGRADE_STOP=<步骤>`，照它前面的中文说明处理；成功是 `UPGRADE_OK=<步骤>`。
+- 补丁真被上游吸收、提交变空：`git -C <worktree> rebase --skip`，并在 worktree 的 `PATCHES.md` 同一行写短 sha 和「已被上游吸收」。叠层清单 `hermes-overlay-manifest.tsv`（与升级脚本同目录）由 owner 改，agent 改不了。
+- **冲突两边都要留时，先核对接线点再删 import**：上游新增的符号和本地替代实现同时出现，两边拼接，不要留一边丢一边。改 import 前先搜该符号在同一文件的调用点：只在冲突标记里出现、没有调用的丢掉；冲突区外还在用的保留。删掉正在用的 import 会让 rebase 继续走，但文件编译不过。
+- `switch` 会自动推送（owner 2026-10-23 定）：只在 verify 绿之后推，`--force-with-lease` 对准开始时的 fork main；活仓闸门红了就把 fork main 推回去。
+- **已有升级锁，后一条不再开一路（硬·2026-10-24）**：`~/.cache/hermes-upgrade/lock` 在，或已有 `hermes-fork-upgrade.sh` 在跑 → 只报「正在升到哪一版、停在哪一步」，不要再跑 check / prepare。课例 2026-10-23：09:33「升级吧」和 10:38「升级一下 hermers」各开一路，11:03 撞上同一把锁。
+- **先对锁再说话（硬）**：用户说「重跑 check / prepare」时，先看 lock 和进程。锁还在、另一路已过 verify 并在 switch → 拒绝重跑并说明原因；重跑会打断正在换活仓的那一步。
+- 换完只报脚本最后的结论，并请 owner `/restart`。
 
 ## 硬规则
+
+- 活仓 `~/.hermes/hermes-agent` 对 agent 只读，由三层强制：Hermes `hooks.pre_tool_call` 守卫（`hermes-live-repo-guard.py`，`fail_closed`，路径见 `references/local-upgrade.md`）拦下 Hermes agent 的写命令；活仓 `reference-transaction` 钩子拒绝把 `main` 指到缺叠层的提交（对所有 agent 生效）；`post-checkout` / `post-rewrite` 发现文件缺叠层就私聊 owner。被拦时不要找绕法，改走上面的脚本。
+- 换完代码，只有贴出 `hermes-fork-upgrade.sh switch` 的 `UPGRADE_OK=switch`（其中含闸门最后一行 `升级闸门通过。`），才能说「已升到 vX」。
 
 - 会话内不跑 `hermes gateway restart`；请用户在聊天里发 `/restart`（只写在终态正文）。核验命令里别出现 restart 字样，lifecycle guard 会整段拦。
 - 在 `/tmp/...` clone 里跑过的 `hermes --version` 会把 Install directory 指到 tmp，不能当活仓证据。
