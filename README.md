@@ -42,7 +42,6 @@ Skills are flat: `skills/<name>/SKILL.md`.
 | [`ai-hotspot-digest`](skills/ai-hotspot-digest/) | Build a daily AI digest (new skills, GitHub projects, news) for a group chat. |
 | [`feishu-chat-style-review`](skills/feishu-chat-style-review/) | Review how the agent replies in Feishu groups, using chat history. |
 | [`feishu-ui-feedback`](skills/feishu-ui-feedback/) | Turn Feishu messages with UI screenshots into concrete UI fixes. |
-| [`desktop-browser-chrome`](skills/desktop-browser-chrome/) | Open URLs in the user's real Chrome instead of a headless browser. |
 | [`cursor-cli`](skills/cursor-cli/) | Run the Cursor CLI (`cursor-agent`) from Hermes: print mode, streaming, model choice. |
 | [`writing-with-cursor`](skills/writing-with-cursor/) | Draft or polish multi-paragraph prose and docs through Cursor. |
 | [`convert-documents-to-markdown`](skills/convert-documents-to-markdown/) | Convert Word, PowerPoint, Excel, and PDF files to Markdown. |

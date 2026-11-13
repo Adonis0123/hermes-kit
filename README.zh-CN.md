@@ -42,7 +42,6 @@
 | [`ai-hotspot-digest`](skills/ai-hotspot-digest/) | 为群聊生成 AI 每日简报（新技能、GitHub 项目、新闻）。 |
 | [`feishu-chat-style-review`](skills/feishu-chat-style-review/) | 根据聊天记录，复盘 agent 在飞书群里的回复风格。 |
 | [`feishu-ui-feedback`](skills/feishu-ui-feedback/) | 把带 UI 截图的飞书消息转成具体的界面修改。 |
-| [`desktop-browser-chrome`](skills/desktop-browser-chrome/) | 在用户真实的 Chrome 里打开链接，不用无头浏览器。 |
 | [`cursor-cli`](skills/cursor-cli/) | 从 Hermes 调用 Cursor CLI（`cursor-agent`）：print 模式、流式输出、选模型。 |
 | [`writing-with-cursor`](skills/writing-with-cursor/) | 借助 Cursor 起草或润色多段落文字和文档。 |
 | [`convert-documents-to-markdown`](skills/convert-documents-to-markdown/) | 把 Word、PowerPoint、Excel、PDF 转成 Markdown。 |
